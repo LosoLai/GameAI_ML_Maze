@@ -22,13 +22,19 @@ public class MazeSpawner : MonoBehaviour {
 	public GameObject Pillar = null;
 	public int Rows = 5;
 	public int Columns = 5;
+	public int Child_Start_Row = 0;
+	public int Child_Start_Col = 0;
+	public int Zombie_Start_Row = 9;
+	public int Zombie_Start_Col = 0;
+	public int SafeZone_Row = 9;
+	public int SafeZone_Col = 9;
 	public float CellWidth = 5;
 	public float CellHeight = 5;
 	public bool AddGaps = true;
 	public GameObject ChildPrefab = null;
 	public GameObject ZombiePrefab = null;
-	public GameObject agentA = null;
-	public GameObject agentB = null;
+	[HideInInspector] GameObject agentA = null;
+	[HideInInspector] GameObject agentB = null;
 
 	private BasicMazeGenerator mMazeGenerator = null;
 
@@ -60,14 +66,10 @@ public class MazeSpawner : MonoBehaviour {
 				float z = row*(CellHeight+(AddGaps?.2f:0));
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
 				GameObject tmp;
-				if(row == 9 && column == 9)
-				{
+				if(row == SafeZone_Row && column == SafeZone_Col)
 					tmp = Instantiate(SafeZone,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
-				}
 				else
-				{
 					tmp = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
-				}
 				tmp.transform.parent = transform;
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+CellWidth/2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
@@ -90,9 +92,9 @@ public class MazeSpawner : MonoBehaviour {
 					tmp.transform.parent = transform;
 				}*/
 
-				if(row == 0 && column == 0)
+				if(row == Child_Start_Row && column == Child_Start_Col)
 					agentA = Instantiate(ChildPrefab,new Vector3(x,1,z), Quaternion.Euler(0,0,0)) as GameObject;
-				if(row == 9 && column == 0)
+				if(row == Zombie_Start_Row && column == Zombie_Start_Col)
 					agentB = Instantiate(ZombiePrefab,new Vector3(x,1,z), Quaternion.Euler(0,0,0)) as GameObject;
 			}
 		}
