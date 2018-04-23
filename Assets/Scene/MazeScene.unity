@@ -155,7 +155,7 @@ Prefab:
     - target: {fileID: 114995230967424072, guid: a090ecb3bcb95504d99f6a9250b06f42,
         type: 2}
       propertyPath: Algorithm
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 114995230967424072, guid: a090ecb3bcb95504d99f6a9250b06f42,
         type: 2}
