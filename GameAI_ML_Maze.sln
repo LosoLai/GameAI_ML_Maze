@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameAI_ML_Maze", "Assembly-CSharp.csproj", "{57D37E3E-A512-D652-2732-2C4059CD0F77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameAI_ML_Maze", "Assembly-CSharp-firstpass.csproj", "{420A3E55-D646-1E93-D8FF-721D3B7B07A4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{57D37E3E-A512-D652-2732-2C4059CD0F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57D37E3E-A512-D652-2732-2C4059CD0F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57D37E3E-A512-D652-2732-2C4059CD0F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{420A3E55-D646-1E93-D8FF-721D3B7B07A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{420A3E55-D646-1E93-D8FF-721D3B7B07A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{420A3E55-D646-1E93-D8FF-721D3B7B07A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{420A3E55-D646-1E93-D8FF-721D3B7B07A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
