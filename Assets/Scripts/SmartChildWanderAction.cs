@@ -11,16 +11,13 @@ public class SmartChildWanderAction : Action {
 	private bool isTimeOut = false;
 
 	public override void Act(StateController controller) {
+		//moves the character to the new position
+		randomRange = new Vector3 (Random.Range(360.0f, -360.0f), Random.Range(0.3f, -0.3f), 0);
 		Wander (controller);
 	}
 
 	private void Wander(StateController controller) {
-
-		//moves the character to the new position
-		randomRange = new Vector3 (Random.Range(360.0f, -360.0f), Random.Range(0.3f, -0.3f), 0);
 		//check is it timeout or not
-
-
 		if (timer <= 0)
 			isTimeOut = true;
 
