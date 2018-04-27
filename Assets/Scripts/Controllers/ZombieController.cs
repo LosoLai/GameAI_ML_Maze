@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 
 public class ZombieController : MonoBehaviour {
-
+	public GameController gameController;
 	private Animator animator;
 	GameObject[] waypoints;
 	int currentWPIndex;
@@ -18,5 +18,10 @@ public class ZombieController : MonoBehaviour {
 		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
 		currentWPIndex = 0;
 	}
-	
+
+	void OnTriggerEnter(Collider other) {
+		if (other.CompareTag ("Player")) {
+			gameController.EndGame (false);
+		}
+	}
 }
