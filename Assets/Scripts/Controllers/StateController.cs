@@ -43,6 +43,8 @@ public class StateController : MonoBehaviour {
 
 	[HideInInspector] public float whistleTimer;
 
+	[HideInInspector] public int currentWayPointIndex = 0;
+
 
 	void Awake() {
 		rigidbody = GetComponent<Rigidbody> ();

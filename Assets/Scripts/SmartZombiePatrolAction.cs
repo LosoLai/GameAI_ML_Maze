@@ -4,14 +4,7 @@ using UnityEngine;
 
 [CreateAssetMenu (menuName = "AI/Action/Patrol")]
 public class SmartZombiePatrolAction : Action {
-	private GameObject[] waypoints;
-	private int currentWPIndex;
-
-	void Awake()
-	{
-		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
-		currentWPIndex = 0;
-	}
+	private GameObject[] waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
 
 	public override void Act (StateController controller)
 	{
@@ -21,18 +14,18 @@ public class SmartZombiePatrolAction : Action {
 	private void Patrol(StateController controller) {
 		if (waypoints.Length == 0)
 			return;
-		
-		if(Vector3.Distance(waypoints[currentWPIndex].transform.position, 
+
+		if(Vector3.Distance(waypoints[controller.currentWayPointIndex].transform.position, 
 			controller.transform.position) < 1.0f)
 		{
-			currentWPIndex++;
-			if(currentWPIndex >= waypoints.Length)
+			controller.currentWayPointIndex++;
+			if(controller.currentWayPointIndex >= waypoints.Length)
 			{
-				currentWPIndex = 0;
+				controller.currentWayPointIndex = 0;
 			}
 		}
 
-		var direction = waypoints[currentWPIndex].transform.position - controller.transform.position;
+		var direction = waypoints[controller.currentWayPointIndex].transform.position - controller.transform.position;
 		controller.transform.rotation = Quaternion.Slerp (
 			controller.transform.rotation,
 			Quaternion.LookRotation(direction),
