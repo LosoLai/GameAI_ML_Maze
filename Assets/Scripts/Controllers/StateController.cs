@@ -31,7 +31,7 @@ public class StateController : MonoBehaviour {
 	[HideInInspector] public float recalculationTimer = 1f;
 
 	// Target variables for actions with a target unit or location (and path to it)
-	[HideInInspector] public GameObject target;
+	public GameObject target;
 	[HideInInspector] public Vector3 targetNode;
 	[HideInInspector] public List<Vector3> path;
 
@@ -78,7 +78,7 @@ public class StateController : MonoBehaviour {
 	//  in every single function that is calling it.
 	public bool RecalculationTimerElapsed() {
 		if (recalculationTimer <= 0f) {
-			recalculationTimer = 10f;
+			recalculationTimer = 1000.0f;
 			return true;
 		}
 		return false;

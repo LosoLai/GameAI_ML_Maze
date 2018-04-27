@@ -9,10 +9,14 @@ using UnityEngine;
 public class ZombieController : MonoBehaviour {
 
 	private Animator animator;
+	GameObject[] waypoints;
+	int currentWPIndex;
 
 	void Awake () {
 		animator = GetComponent<Animator> ();
 		animator.SetBool ("run", true); // Always running
+		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+		currentWPIndex = 0;
 	}
 	
 }
