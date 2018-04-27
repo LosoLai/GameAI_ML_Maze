@@ -4,7 +4,12 @@ using UnityEngine;
 
 [CreateAssetMenu (menuName = "AI/Action/Patrol")]
 public class SmartZombiePatrolAction : Action {
-	private GameObject[] waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+	private GameObject[] waypoints;
+
+	void Awake()
+	{
+		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+	}
 
 	public override void Act (StateController controller)
 	{
