@@ -19,9 +19,9 @@ public class ZombieController : MonoBehaviour {
 		currentWPIndex = 0;
 	}
 
-	void OnTriggerEnter(Collider other) {
-		if (other.CompareTag ("Player")) {
-			gameController.EndGame (false);
+	void OnCollisionEnter(Collision col) {
+		if (col.gameObject.CompareTag ("Player")) {
+			gameController.EndGame (true);
 		}
 	}
 }
