@@ -72,6 +72,7 @@
      <Compile Include="Assets\Scripts\FleeAction.cs" />
      <Compile Include="Assets\Scripts\FollowAction.cs" />
      <Compile Include="Assets\Scripts\SeeDecision.cs" />
+     <Compile Include="Assets\Scripts\SmartChildFollowAction.cs" />
      <Compile Include="Assets\Scripts\SmartChildWanderAction.cs" />
      <Compile Include="Assets\Scripts\SmartZombiePatrolAction.cs" />
      <Compile Include="Assets\Scripts\SmartZombieWanderAction.cs" />

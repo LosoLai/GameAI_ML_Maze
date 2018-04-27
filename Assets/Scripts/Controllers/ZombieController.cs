@@ -9,14 +9,10 @@ using UnityEngine;
 public class ZombieController : MonoBehaviour {
 	public GameController gameController;
 	private Animator animator;
-	GameObject[] waypoints;
-	int currentWPIndex;
 
 	void Awake () {
 		animator = GetComponent<Animator> ();
 		animator.SetBool ("run", true); // Always running
-		waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
-		currentWPIndex = 0;
 	}
 
 	void OnCollisionEnter(Collision col) {
