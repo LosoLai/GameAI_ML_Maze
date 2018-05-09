@@ -25,6 +25,8 @@ public abstract class BasicMazeGenerator {
 		for (int row = 0; row < rows; row++) {
 			for(int column = 0; column < columns; column++){
 				mMaze[row,column] = new MazeCell();
+				mMaze [row, column].row = row;
+				mMaze [row, column].col = column;
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 //<summary>
 //Game object, that creates maze and instantiates it in scene
@@ -38,9 +39,44 @@ public class MazeSpawner : MonoBehaviour {
 
 	private BasicMazeGenerator mMazeGenerator = null;
 
+	//the variables are for reinforcement learning
+	private readonly float alphaDecade = 0.5f;
+	private int current_RowIndex = 0;
+	private int current_ColIndex = 0;
+	private bool isActionPerforming = false;
+	private bool isEnterSafeZone = false;
+	private MazeCell startStatus = null;
+	private MazeCell endStatus = null;
+	private ActionChoices actionChoice;
+	private ActionResultTable resultTable = null;
+	private List<Episodes> experienceList = new List<Episodes>();
+
 	void Start () {
+		createMaze ();
+		initialResultTable ();
+	}
+
+	void FixedUpdate () {
+		if (!isEnterSafeZone) {
+			//do iteration training
+			if (!isActionPerforming)
+				doAction ();
+			else {
+				actionPerforming ();
+			}
+		} else {
+			//evaluate experience
+			//reset
+			current_RowIndex = Child_Start_Row;
+			current_ColIndex = Child_Start_Col;
+			agentA.transform.position = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex).floor.transform.position;
+		}
+	}
+
+	void createMaze() {
 		if (!FullRandom) {
-			Random.seed = RandomSeed;
+			//Random.seed = RandomSeed;
+			Random.InitState (RandomSeed);
 		}
 		switch (Algorithm) {
 		case MazeGenerationAlgorithm.PureRecursive:
@@ -67,10 +103,10 @@ public class MazeSpawner : MonoBehaviour {
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
 				GameObject tmp;
 				if(row == SafeZone_Row && column == SafeZone_Col)
-					tmp = Instantiate(SafeZone,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
+					cell.floor = Instantiate(SafeZone,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
 				else
-					tmp = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
-				tmp.transform.parent = transform;
+					cell.floor = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
+				cell.floor.transform.parent = transform;
 				if(cell.WallRight){
 					tmp = Instantiate(Wall,new Vector3(x+CellWidth/2,0,z)+Wall.transform.position,Quaternion.Euler(0,90,0)) as GameObject;// right
 					tmp.transform.parent = transform;
@@ -94,8 +130,8 @@ public class MazeSpawner : MonoBehaviour {
 
 				if(row == Child_Start_Row && column == Child_Start_Col)
 					agentA = Instantiate(ChildPrefab,new Vector3(x,1,z), Quaternion.Euler(0,0,0)) as GameObject;
-				if(row == Zombie_Start_Row && column == Zombie_Start_Col)
-					agentB = Instantiate(ZombiePrefab,new Vector3(x,1,z), Quaternion.Euler(0,0,0)) as GameObject;
+				//if(row == Zombie_Start_Row && column == Zombie_Start_Col)
+				//	agentB = Instantiate(ZombiePrefab,new Vector3(x,1,z), Quaternion.Euler(0,0,0)) as GameObject;
 			}
 		}
 
@@ -110,4 +146,140 @@ public class MazeSpawner : MonoBehaviour {
 			}
 		}
 	}
+
+	void initialResultTable() {
+		current_RowIndex = Child_Start_Row;
+		current_ColIndex = Child_Start_Col;
+
+		int mazeRow = Rows;
+		int mazeCol = Columns;
+		resultTable = new ActionResultTable ();
+		float initialValue = 0.0f;
+
+		for (int i=0 ; i<mazeRow ; i++) {
+			for (int j = 0; j < mazeCol; j++) {
+				if(i == SafeZone_Row && j == SafeZone_Col)
+					resultTable.dictionary.Add (mMazeGenerator.GetMazeCell(i, j), 10.0f);
+				else
+					resultTable.dictionary.Add (mMazeGenerator.GetMazeCell(i, j), initialValue);
+			}
+		}
+	}
+
+	void doAction() {
+		startStatus = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex);
+
+		int action = Random.Range (1, 1000) % 4;
+		if (action == 0) {
+			current_RowIndex++;
+			if(current_RowIndex >= Rows)
+				current_RowIndex = Rows - 1;
+			actionChoice = ActionChoices.MOVE_UP;
+			Debug.Log("move up " + current_RowIndex + current_ColIndex);
+		} else if (action == 1) {
+			current_ColIndex++;
+			if (current_ColIndex >= Columns)
+				current_ColIndex = Columns - 1;
+			actionChoice = ActionChoices.MOVE_RIGHT;
+			Debug.Log("move right " + current_RowIndex + current_ColIndex);
+		} else if (action == 2) {
+			current_RowIndex--;
+			if (current_RowIndex <= 0)
+				current_RowIndex = 0;
+			actionChoice = ActionChoices.MOVE_DOWN;
+			Debug.Log("move back " + current_RowIndex + current_ColIndex);
+		} else {
+			current_ColIndex--;
+			if (current_ColIndex <= 0)
+				current_ColIndex = 0;
+			actionChoice = ActionChoices.MOVE_LEFT;
+			Debug.Log("move left " + current_RowIndex + current_ColIndex);
+		}
+
+		endStatus = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex);
+		isActionPerforming = true;
+	}
+
+	void actionPerforming() {
+		if (agentA != null) {
+			float actionResult = actionResultCalculate ();
+			if (actionResult >= 0) {
+				Vector3 targetPos = endStatus.floor.transform.position;
+				agentA.transform.position = targetPos;
+			} else {
+				Vector3 targetPos = startStatus.floor.transform.position;
+				agentA.transform.position = targetPos;
+				current_RowIndex = startStatus.row;
+				current_ColIndex = startStatus.col;
+			}
+			Debug.Log("current pos :" + current_RowIndex + current_ColIndex);
+
+			//save and update
+			saveResultAndUpdateTable(actionResult);
+			isActionPerforming = false;
+		}
+	}
+
+	float actionResultCalculate() {
+		float result = 0.0f;
+		bool hasWall = false;
+		switch (actionChoice) {
+			case ActionChoices.MOVE_UP:
+			{
+				hasWall = startStatus.WallFront;
+				break;
+			}
+			case ActionChoices.MOVE_RIGHT:
+			{
+				hasWall = startStatus.WallRight;
+				break;
+			}
+			case ActionChoices.MOVE_DOWN:
+			{
+				hasWall = startStatus.WallBack;
+				break;
+			}
+			case ActionChoices.MOVE_LEFT:
+			{
+				hasWall = startStatus.WallLeft;
+				break;
+			}
+		}
+
+		if (hasWall)
+			result = -1.0f;
+
+		return result;
+	}
+
+	void saveResultAndUpdateTable(float actionResult){
+		//save the record
+		//Episodes record = new Episodes ();
+		//record.start = startStatus;
+		//record.end = endStatus;
+		//record.action = actionChoice;
+		//record.actionResult = actionResult;
+		//experienceList.Add (record);
+
+		//update table
+		if(resultTable != null){
+			float startStatus_Value; 
+			if (resultTable.dictionary.TryGetValue (startStatus, out startStatus_Value)) {
+				Debug.Log("table value: start" + startStatus.row + startStatus.col + "value : " + startStatus_Value);
+				resultTable.dictionary.Remove(startStatus);
+			}
+				
+			float endStatus_Value;
+			if(resultTable.dictionary.TryGetValue (endStatus, out endStatus_Value)){
+				Debug.Log("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
+				startStatus_Value = (endStatus_Value + actionResult) * alphaDecade;
+				Debug.Log("updated start value :" + startStatus_Value);
+				resultTable.dictionary.Add (startStatus, startStatus_Value);
+				if (endStatus_Value >= 10.0f)
+					isEnterSafeZone = true;
+				if(isEnterSafeZone)
+					Debug.Log("Enter SafeZone");
+			}
+		}
+	} 
 }

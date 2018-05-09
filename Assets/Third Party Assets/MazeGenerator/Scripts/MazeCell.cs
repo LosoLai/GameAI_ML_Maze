@@ -18,4 +18,7 @@ public class MazeCell {
 	public bool WallLeft = false;
 	public bool WallBack = false;
 	public bool IsGoal = false;
+	public GameObject floor = null;
+	public int row = 0;
+	public int col = 0;
 }

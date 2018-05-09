@@ -20,10 +20,10 @@ MonoBehaviour:
     y: 30
     width: 1366
     height: 635
-  m_MinSize: {x: 681, y: 471}
-  m_MaxSize: {x: 14002, y: 14021}
+  m_MinSize: {x: 679, y: 471}
+  m_MaxSize: {x: 14000, y: 14021}
   vertical: 0
-  controlID: 1163
+  controlID: 16934
 --- !u!114 &2
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 471}
   m_MaxSize: {x: 10000, y: 14021}
   vertical: 1
-  controlID: 1135
+  controlID: 16935
 --- !u!114 &4
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -148,7 +148,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 221}
   m_MaxSize: {x: 8004, y: 4021}
   vertical: 0
-  controlID: 1136
+  controlID: 16936
 --- !u!114 &5
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -203,9 +203,9 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: 6a2a0000
-    m_LastClickedID: 0
-    m_ExpandedIDs: 9efbffff00000000
+    m_SelectedIDs: 7cb9ffff
+    m_LastClickedID: -18052
+    m_ExpandedIDs: 7eb9fffff2e3ffff58e5ffffecebffffb4f0ffff9efbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -319,9 +319,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: -0.5160747, y: -0.042363234, z: 0.025566733, w: -0.8551133}
   m_Size:
-    m_Target: 53.215946
+    m_Target: 129.85919
     speed: 2
-    m_Value: 53.215946
+    m_Value: 129.85919
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -484,19 +484,19 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets/Scripts/States
+    - Assets/Third Party Assets/MazeGenerator/Scripts
   m_ViewMode: 1
   m_StartGridSize: 75
   m_LastFolders:
-  - Assets/Scripts/States
+  - Assets/Third Party Assets/MazeGenerator/Scripts
   m_LastFoldersGridSize: 75
   m_LastProjectPath: C:\Users\Loso\Documents\GitHub\GameAI_ML_Maze
   m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 59}
-    m_SelectedIDs: 642c0000
-    m_LastClickedID: 11364
-    m_ExpandedIDs: 000000000c2800002c2900001e2b0000642c0000a62c0000e0300000e2300000e4300000e6300000e8300000ea300000ec300000ee300000f030000000ca9a3bffffff7f
+    scrollPos: {x: 0, y: 219}
+    m_SelectedIDs: ee2b0000
+    m_LastClickedID: 11246
+    m_ExpandedIDs: 000000000c2800002c2900001e2b00003a2b0000962b0000642c0000a62c0000e0300000e2300000e4300000e6300000e8300000ea300000ec300000ee300000f030000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -524,7 +524,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000000c2800002c2900001e2b0000642c0000a62c0000e0300000e2300000e4300000e6300000e8300000ea300000ec300000ee300000f030000000ca9a3bffffff7f
+    m_ExpandedIDs: 000000000c2800002c2900001e2b00003a2b0000962b0000642c0000a62c0000e0300000e2300000e4300000e6300000e8300000ea300000ec300000ee300000f030000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -549,8 +549,8 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
   m_ListAreaState:
-    m_SelectedInstanceIDs: 6a2a0000
-    m_LastClickedInstanceID: 10858
+    m_SelectedInstanceIDs: 7cb9ffff
+    m_LastClickedInstanceID: -18052
     m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: 16350000942a000000000000
     m_RenameOverlay:
@@ -576,7 +576,7 @@ MonoBehaviour:
       m_Icon: {fileID: 0}
       m_ResourceFile: 
     m_NewAssetIndexInList: -1
-    m_ScrollPosition: {x: 0, y: 16}
+    m_ScrollPosition: {x: 0, y: 0}
     m_GridSize: 75
   m_DirectoriesAreaWidth: 186
 --- !u!114 &13
@@ -597,8 +597,8 @@ MonoBehaviour:
     y: 0
     width: 277
     height: 635
-  m_MinSize: {x: 277, y: 71}
-  m_MaxSize: {x: 4002, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 14}
   m_Panes:
   - {fileID: 14}
