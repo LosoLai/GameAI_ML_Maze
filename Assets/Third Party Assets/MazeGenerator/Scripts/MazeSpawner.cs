@@ -70,6 +70,7 @@ public class MazeSpawner : MonoBehaviour {
 			current_RowIndex = Child_Start_Row;
 			current_ColIndex = Child_Start_Col;
 			agentA.transform.position = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex).floor.transform.position;
+			isEnterSafeZone = false;
 		}
 	}
 
