@@ -106,10 +106,10 @@ MonoBehaviour:
     y: 30
     width: 1366
     height: 635
-  m_MinSize: {x: 681, y: 492}
-  m_MaxSize: {x: 14004, y: 14042}
+  m_MinSize: {x: 679, y: 492}
+  m_MaxSize: {x: 14002, y: 14042}
   vertical: 0
-  controlID: 13316
+  controlID: 4329
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -133,7 +133,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 492}
   m_MaxSize: {x: 10002, y: 14042}
   vertical: 1
-  controlID: 13456
+  controlID: 4330
 --- !u!114 &7
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -157,7 +157,7 @@ MonoBehaviour:
   m_MinSize: {x: 404, y: 221}
   m_MaxSize: {x: 8004, y: 4021}
   vertical: 0
-  controlID: 13457
+  controlID: 4331
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -368,9 +368,9 @@ MonoBehaviour:
   m_PersistentViewDataDictionary: {fileID: 0}
   m_TreeViewState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: b429fdff
-    m_LastClickedID: -185932
-    m_ExpandedIDs: aa29fdffb429fdff580cfeff520efeff1ee2feff5e30ffff3866ffff8267ffffecdeffffd8dfffff46ecffff28f4ffff9efbffff00000000
+    m_SelectedIDs: 6234ffff
+    m_LastClickedID: -52126
+    m_ExpandedIDs: 6434ffff1c58ffff788cffff128fffff9efbffff00000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -596,19 +596,19 @@ MonoBehaviour:
     m_ShowAllHits: 0
     m_SearchArea: 0
     m_Folders:
-    - Assets/Third Party Assets/MazeGenerator/Prefabs
+    - Assets/Third Party Assets/MazeGenerator/Scripts
   m_ViewMode: 1
   m_StartGridSize: 75
   m_LastFolders:
-  - Assets/Third Party Assets/MazeGenerator/Prefabs
+  - Assets/Third Party Assets/MazeGenerator/Scripts
   m_LastFoldersGridSize: 75
   m_LastProjectPath: C:\Users\Loso\Documents\GitHub\GameAI_ML_Maze
   m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 139}
-    m_SelectedIDs: 7c2b0000
-    m_LastClickedID: 11132
-    m_ExpandedIDs: 000000001028000030290000222b00003e2b00009a2b0000682c00002e2e0000302e0000322e0000342e0000362e0000382e00003a2e00003c2e00003e2e000000ca9a3bffffff7f
+    m_SelectedIDs: f22b0000
+    m_LastClickedID: 11250
+    m_ExpandedIDs: 000000001028000030290000222b00003e2b00009a2b0000682c00005a2e00005c2e00005e2e0000602e0000622e0000642e0000662e0000682e00006a2e000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -636,7 +636,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000001028000030290000222b00003e2b00009a2b0000682c00002e2e0000302e0000322e0000342e0000362e0000382e00003a2e00003c2e00003e2e000000ca9a3bffffff7f
+    m_ExpandedIDs: 000000001028000030290000222b00003e2b00009a2b0000682c00005a2e00005c2e00005e2e0000602e0000622e0000642e0000662e0000682e00006a2e000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -747,8 +747,8 @@ MonoBehaviour:
   m_DepthBufferBits: 0
   m_Pos:
     serializedVersion: 2
-    x: 1083
-    y: 100
+    x: 1091
+    y: 92
     width: 275
-    height: 598
+    height: 614
   m_PersistentViewDataDictionary: {fileID: 0}

@@ -40,6 +40,8 @@ public class MazeSpawner : MonoBehaviour {
 	private BasicMazeGenerator mMazeGenerator = null;
 
 	//the variables are for reinforcement learning
+	private readonly float freezeTime = 1.0f;
+	private float freezeTimer = 0.0f;
 	private readonly float alphaDecade = 0.5f;
 	private int current_RowIndex = 0;
 	private int current_ColIndex = 0;
@@ -65,12 +67,17 @@ public class MazeSpawner : MonoBehaviour {
 				actionPerforming ();
 			}
 		} else {
-			//evaluate experience
-			//reset
-			current_RowIndex = Child_Start_Row;
-			current_ColIndex = Child_Start_Col;
-			agentA.transform.position = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex).floor.transform.position;
-			isEnterSafeZone = false;
+			freezeTimer += Time.deltaTime;
+			Debug.Log("Timer " + freezeTimer);
+			if (freezeTimer >= freezeTime) {
+				//evaluate experience
+				//reset
+				current_RowIndex = Child_Start_Row;
+				current_ColIndex = Child_Start_Col;
+				agentA.transform.position = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex).floor.transform.position;
+				isEnterSafeZone = false;
+				freezeTimer = 0.0f;
+			}
 		}
 	}
 
@@ -103,8 +110,10 @@ public class MazeSpawner : MonoBehaviour {
 				float z = row*(CellHeight+(AddGaps?.2f:0));
 				MazeCell cell = mMazeGenerator.GetMazeCell(row,column);
 				GameObject tmp;
-				if(row == SafeZone_Row && column == SafeZone_Col)
+				if(row == SafeZone_Row && column == SafeZone_Col){
 					cell.floor = Instantiate(SafeZone,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
+					cell.IsGoal = true;
+				}
 				else
 					cell.floor = Instantiate(Floor,new Vector3(x,0,z), Quaternion.Euler(0,0,0)) as GameObject;
 				cell.floor.transform.parent = transform;
@@ -155,14 +164,12 @@ public class MazeSpawner : MonoBehaviour {
 		int mazeRow = Rows;
 		int mazeCol = Columns;
 		resultTable = new ActionResultTable ();
-		float initialValue = 0.0f;
 
 		for (int i=0 ; i<mazeRow ; i++) {
 			for (int j = 0; j < mazeCol; j++) {
-				if(i == SafeZone_Row && j == SafeZone_Col)
-					resultTable.dictionary.Add (mMazeGenerator.GetMazeCell(i, j), 10.0f);
-				else
-					resultTable.dictionary.Add (mMazeGenerator.GetMazeCell(i, j), initialValue);
+				//Q_Table
+				ActionResult Q_Value = new ActionResult();
+				resultTable.Q_Table.Add(mMazeGenerator.GetMazeCell(i, j), Q_Value);
 			}
 		}
 	}
@@ -223,6 +230,9 @@ public class MazeSpawner : MonoBehaviour {
 
 	float actionResultCalculate() {
 		float result = 0.0f;
+		if (endStatus.IsGoal)
+			return 10.0f;
+		
 		bool hasWall = false;
 		switch (actionChoice) {
 			case ActionChoices.MOVE_UP:
@@ -264,20 +274,40 @@ public class MazeSpawner : MonoBehaviour {
 
 		//update table
 		if(resultTable != null){
-			float startStatus_Value; 
-			if (resultTable.dictionary.TryGetValue (startStatus, out startStatus_Value)) {
+			ActionResult startStatus_QValue;
+			float startStatus_Value = 0.0f; 
+			if (resultTable.Q_Table.TryGetValue (startStatus, out startStatus_QValue)) {
+				if (startStatus_QValue.Q_Value.TryGetValue (actionChoice, out startStatus_Value)) {
+					startStatus_QValue.Q_Value.Remove (actionChoice);
+				}
+					
 				Debug.Log("table value: start" + startStatus.row + startStatus.col + "value : " + startStatus_Value);
-				resultTable.dictionary.Remove(startStatus);
+				//resultTable.Q_Table.Remove(startStatus);
 			}
 				
-			float endStatus_Value;
-			if(resultTable.dictionary.TryGetValue (endStatus, out endStatus_Value)){
+			ActionResult endStatus_QValue;
+			float endStatus_Value = 0.0f;
+			if(resultTable.Q_Table.TryGetValue (endStatus, out endStatus_QValue)){
+				if(endStatus_QValue.Q_Value.TryGetValue(actionChoice, out endStatus_Value)) {
+					endStatus_QValue.Q_Value.Remove (actionChoice);
+				}
+
 				Debug.Log("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
 				startStatus_Value = (endStatus_Value + actionResult) * alphaDecade;
 				Debug.Log("updated start value :" + startStatus_Value);
-				resultTable.dictionary.Add (startStatus, startStatus_Value);
-				if (endStatus_Value >= 10.0f)
+				startStatus_QValue.Q_Value.Add (actionChoice, startStatus_Value);
+
+				if (endStatus.IsGoal) {
+					resultTable.Q_Table.Remove (endStatus);
+					endStatus_Value = actionResult * alphaDecade;
+
+					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_UP, endStatus_Value);
+					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_RIGHT, endStatus_Value);
+					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_DOWN, endStatus_Value);
+					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_LEFT, endStatus_Value);
+					resultTable.Q_Table.Add (endStatus, endStatus_QValue);
 					isEnterSafeZone = true;
+				}
 				if(isEnterSafeZone)
 					Debug.Log("Enter SafeZone");
 			}

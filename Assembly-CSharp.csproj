@@ -99,6 +99,7 @@
      <Compile Include="Assets\Third Party Assets\LowPolyNature\Scripts\ItemDropHandler.cs" />
      <Compile Include="Assets\Third Party Assets\LowPolyNature\Scripts\PlayerController.cs" />
      <Compile Include="Assets\Third Party Assets\LowPolyNature\Scripts\PlayerFollow.cs" />
+     <Compile Include="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResult.cs" />
      <Compile Include="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResultTable.cs" />
      <Compile Include="Assets\Third Party Assets\MazeGenerator\Scripts\BasicMazeGenerator.cs" />
      <Compile Include="Assets\Third Party Assets\MazeGenerator\Scripts\DivisionMazeGenerator.cs" />
