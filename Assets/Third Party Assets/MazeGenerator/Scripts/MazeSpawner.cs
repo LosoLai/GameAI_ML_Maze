@@ -278,7 +278,7 @@ public class MazeSpawner : MonoBehaviour {
 			float startStatus_Value = 0.0f; 
 			if (resultTable.Q_Table.TryGetValue (startStatus, out startStatus_QValue)) {
 				if (startStatus_QValue.Q_Value.TryGetValue (actionChoice, out startStatus_Value)) {
-					startStatus_QValue.Q_Value.Remove (actionChoice);
+					//startStatus_QValue.Q_Value.Remove (actionChoice);
 				}
 					
 				Debug.Log("table value: start" + startStatus.row + startStatus.col + "value : " + startStatus_Value);
@@ -289,23 +289,19 @@ public class MazeSpawner : MonoBehaviour {
 			float endStatus_Value = 0.0f;
 			if(resultTable.Q_Table.TryGetValue (endStatus, out endStatus_QValue)){
 				if(endStatus_QValue.Q_Value.TryGetValue(actionChoice, out endStatus_Value)) {
-					endStatus_QValue.Q_Value.Remove (actionChoice);
+					Debug.Log("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
+					startStatus_Value = (endStatus_Value + actionResult) * alphaDecade;
+					Debug.Log("updated start value :" + startStatus_Value);
+					startStatus_QValue.Q_Value[actionChoice] = startStatus_Value;
 				}
 
-				Debug.Log("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
-				startStatus_Value = (endStatus_Value + actionResult) * alphaDecade;
-				Debug.Log("updated start value :" + startStatus_Value);
-				startStatus_QValue.Q_Value.Add (actionChoice, startStatus_Value);
-
 				if (endStatus.IsGoal) {
-					resultTable.Q_Table.Remove (endStatus);
 					endStatus_Value = actionResult * alphaDecade;
 
-					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_UP, endStatus_Value);
-					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_RIGHT, endStatus_Value);
-					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_DOWN, endStatus_Value);
-					endStatus_QValue.Q_Value.Add (ActionChoices.MOVE_LEFT, endStatus_Value);
-					resultTable.Q_Table.Add (endStatus, endStatus_QValue);
+					endStatus_QValue.Q_Value[ActionChoices.MOVE_UP] = endStatus_Value;
+					endStatus_QValue.Q_Value[ActionChoices.MOVE_RIGHT] = endStatus_Value;
+					endStatus_QValue.Q_Value[ActionChoices.MOVE_DOWN] = endStatus_Value;
+					endStatus_QValue.Q_Value[ActionChoices.MOVE_LEFT] = endStatus_Value;
 					isEnterSafeZone = true;
 				}
 				if(isEnterSafeZone)
