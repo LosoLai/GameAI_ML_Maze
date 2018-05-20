@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 //<summary>
 //Game object, that creates maze and instantiates it in scene
@@ -50,8 +52,12 @@ public class MazeSpawner : MonoBehaviour {
 	private MazeCell startStatus = null;
 	private MazeCell endStatus = null;
 	private ActionChoices actionChoice;
+	private List<ActionChoices> actionChoiceArray = new List<ActionChoices>();
 	private ActionResultTable resultTable = null;
 	private List<Episodes> experienceList = new List<Episodes>();
+
+	//text file
+	//private StreamWriter sw = new StreamWriter("QValueResult.txt");
 
 	void Start () {
 		createMaze ();
@@ -161,36 +167,100 @@ public class MazeSpawner : MonoBehaviour {
 		current_RowIndex = Child_Start_Row;
 		current_ColIndex = Child_Start_Col;
 
-		int mazeRow = Rows;
-		int mazeCol = Columns;
-		resultTable = new ActionResultTable ();
+		//writing file title
+		using (var sw = new StreamWriter("QValueResult.txt"))
+		{
+			var no = "Line No.1";
+			var position = "Status\t";
+			var up = "Ac_U";
+			var right = "Ac_R";
+			var down = "Ac_D";
+			var left = "Ac_L";
+			var line = string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\n", no, position, up, right, down, left);
+			sw.WriteLine(line);
 
-		for (int i=0 ; i<mazeRow ; i++) {
-			for (int j = 0; j < mazeCol; j++) {
-				//Q_Table
-				ActionResult Q_Value = new ActionResult();
-				resultTable.Q_Table.Add(mMazeGenerator.GetMazeCell(i, j), Q_Value);
+			int mazeRow = Rows;
+			int mazeCol = Columns;
+			resultTable = new ActionResultTable ();
+
+			for (int i=0 ; i<mazeRow ; i++) {
+				for (int j = 0; j < mazeCol; j++) {
+					//Q_Table
+					ActionResult Q_Value = new ActionResult();
+					resultTable.Q_Table.Add(mMazeGenerator.GetMazeCell(i, j), Q_Value);
+					resultTable.writeInitialValue (sw, i, j, Q_Value, Columns);
+				}
 			}
+
+			sw.Flush();
+			sw.Close();
 		}
+
+		actionChoiceArray.Add (ActionChoices.MOVE_UP);
+		actionChoiceArray.Add (ActionChoices.MOVE_RIGHT);
+		actionChoiceArray.Add (ActionChoices.MOVE_DOWN);
+		actionChoiceArray.Add (ActionChoices.MOVE_LEFT);
+	}
+
+	List<ActionChoices> getOptimalPolicy(MazeCell status) {
+		List<ActionChoices> optimalPolicySet = null;
+		ActionResult status_QValue;
+		float optimalValue = -10.0f;
+		if (resultTable.Q_Table.TryGetValue (status, out status_QValue)) {
+			if (status_QValue.Q_Value.Count > 0) {
+				optimalPolicySet = new List<ActionChoices> ();
+				ActionChoices optimalIndex = ActionChoices.MOVE_UP;
+				foreach (var result in status_QValue.Q_Value) {
+					if (result.Value >= optimalValue) {
+						optimalValue = result.Value;
+						optimalIndex = result.Key;
+						optimalPolicySet.Add (optimalIndex);
+					}
+				}
+				//optimalPolicySet.Add (optimalIndex);
+				return optimalPolicySet;
+			} else {
+				return optimalPolicySet;
+			}
+		} 
+
+		return optimalPolicySet;
 	}
 
 	void doAction() {
 		startStatus = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex);
 
-		int action = Random.Range (1, 1000) % 4;
-		if (action == 0) {
+		ActionChoices action;
+		List<ActionChoices> actionSet = getOptimalPolicy(startStatus);
+		if (actionSet == null) {
+			Debug.Log("Random Run");
+			int actionIndex = Random.Range (1, 1000) % 4;
+			action = actionChoiceArray [actionIndex];
+		} else if(actionSet.Count == 1){
+			Debug.Log("Choose Optimal Policy, count :" + actionSet.Count);
+			action = (ActionChoices)actionSet [0];
+		} 
+		else {
+			Debug.Log("Choose Optimal Policy, count :" + actionSet.Count);
+			//need to check is any optimal policay here
+			int randomIndex = Random.Range (1, 1000) % actionSet.Count;
+			Debug.Log("randomIndex :" + randomIndex);
+			action = (ActionChoices)actionSet [randomIndex];
+		}
+
+		if (action == ActionChoices.MOVE_UP) {
 			current_RowIndex++;
 			if(current_RowIndex >= Rows)
 				current_RowIndex = Rows - 1;
 			actionChoice = ActionChoices.MOVE_UP;
 			Debug.Log("move up " + current_RowIndex + current_ColIndex);
-		} else if (action == 1) {
+		} else if (action == ActionChoices.MOVE_RIGHT) {
 			current_ColIndex++;
 			if (current_ColIndex >= Columns)
 				current_ColIndex = Columns - 1;
 			actionChoice = ActionChoices.MOVE_RIGHT;
 			Debug.Log("move right " + current_RowIndex + current_ColIndex);
-		} else if (action == 2) {
+		} else if (action == ActionChoices.MOVE_DOWN) {
 			current_RowIndex--;
 			if (current_RowIndex <= 0)
 				current_RowIndex = 0;
@@ -211,6 +281,7 @@ public class MazeSpawner : MonoBehaviour {
 	void actionPerforming() {
 		if (agentA != null) {
 			float actionResult = actionResultCalculate ();
+
 			if (actionResult >= 0) {
 				Vector3 targetPos = endStatus.floor.transform.position;
 				agentA.transform.position = targetPos;
@@ -220,10 +291,11 @@ public class MazeSpawner : MonoBehaviour {
 				current_RowIndex = startStatus.row;
 				current_ColIndex = startStatus.col;
 			}
-			Debug.Log("current pos :" + current_RowIndex + current_ColIndex);
 
 			//save and update
 			saveResultAndUpdateTable(actionResult);
+
+			Debug.Log("current pos :" + current_RowIndex + current_ColIndex);
 			isActionPerforming = false;
 		}
 	}
@@ -259,18 +331,41 @@ public class MazeSpawner : MonoBehaviour {
 
 		if (hasWall)
 			result = -1.0f;
+		else
+			result = 1.0f;
 
 		return result;
 	}
 
+	string updatedStatusString(int no, int i, int j, ActionResult result){
+		string line = "Line No." + no + "\t";
+		string pos = "POS(" + i + "," + j + ")";
+		string vText = line + pos;
+
+		float up = 0.0f;
+		float right = 0.0f;
+		float down = 0.0f;
+		float left = 0.0f;
+		if (result.Q_Value.TryGetValue (ActionChoices.MOVE_UP, out up)) {
+			vText += "\tU:" + up + "\t";
+		}
+		if (result.Q_Value.TryGetValue (ActionChoices.MOVE_RIGHT, out right)) {
+			vText += "R:" + right + "\t";
+		}
+		if (result.Q_Value.TryGetValue (ActionChoices.MOVE_DOWN, out down)) {
+			vText += "D:" + down + "\t";
+		}
+		if (result.Q_Value.TryGetValue (ActionChoices.MOVE_LEFT, out left)) {
+			vText += "L:" + left;
+		}
+			
+		Debug.Log("S_QV String:" + vText);
+		return vText;
+	}
+
 	void saveResultAndUpdateTable(float actionResult){
-		//save the record
-		//Episodes record = new Episodes ();
-		//record.start = startStatus;
-		//record.end = endStatus;
-		//record.action = actionChoice;
-		//record.actionResult = actionResult;
-		//experienceList.Add (record);
+		bool update_StartStatus = false;
+		bool update_EndStatus = false;
 
 		//update table
 		if(resultTable != null){
@@ -278,35 +373,56 @@ public class MazeSpawner : MonoBehaviour {
 			float startStatus_Value = 0.0f; 
 			if (resultTable.Q_Table.TryGetValue (startStatus, out startStatus_QValue)) {
 				if (startStatus_QValue.Q_Value.TryGetValue (actionChoice, out startStatus_Value)) {
-					//startStatus_QValue.Q_Value.Remove (actionChoice);
+					update_StartStatus = true;
+					Debug.Log("table value: start" + startStatus.row + startStatus.col + "value : " + startStatus_Value);
 				}
-					
-				Debug.Log("table value: start" + startStatus.row + startStatus.col + "value : " + startStatus_Value);
-				//resultTable.Q_Table.Remove(startStatus);
 			}
-				
+
 			ActionResult endStatus_QValue;
 			float endStatus_Value = 0.0f;
 			if(resultTable.Q_Table.TryGetValue (endStatus, out endStatus_QValue)){
-				if(endStatus_QValue.Q_Value.TryGetValue(actionChoice, out endStatus_Value)) {
-					Debug.Log("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
-					startStatus_Value = (endStatus_Value + actionResult) * alphaDecade;
-					Debug.Log("updated start value :" + startStatus_Value);
-					startStatus_QValue.Q_Value[actionChoice] = startStatus_Value;
-				}
+				if (endStatus_QValue.Q_Value.TryGetValue (actionChoice, out endStatus_Value)) {
+					if (endStatus.IsGoal) {
+						endStatus_Value = actionResult;
 
-				if (endStatus.IsGoal) {
-					endStatus_Value = actionResult * alphaDecade;
+						endStatus_QValue.Q_Value[ActionChoices.MOVE_UP] = endStatus_Value;
+						endStatus_QValue.Q_Value[ActionChoices.MOVE_RIGHT] = endStatus_Value;
+						endStatus_QValue.Q_Value[ActionChoices.MOVE_DOWN] = endStatus_Value;
+						endStatus_QValue.Q_Value[ActionChoices.MOVE_LEFT] = endStatus_Value;
+						Debug.Log("Update endStatus");
+						update_EndStatus = true;
+						isEnterSafeZone = true;
+					}
+					if(isEnterSafeZone)
+						Debug.Log("Enter SafeZone");
+				} 
 
-					endStatus_QValue.Q_Value[ActionChoices.MOVE_UP] = endStatus_Value;
-					endStatus_QValue.Q_Value[ActionChoices.MOVE_RIGHT] = endStatus_Value;
-					endStatus_QValue.Q_Value[ActionChoices.MOVE_DOWN] = endStatus_Value;
-					endStatus_QValue.Q_Value[ActionChoices.MOVE_LEFT] = endStatus_Value;
-					isEnterSafeZone = true;
-				}
-				if(isEnterSafeZone)
-					Debug.Log("Enter SafeZone");
+				Debug.Log ("table value: end" + endStatus.row + endStatus.col + "value : " + endStatus_Value);
+				startStatus_Value = endStatus_Value + (actionResult * alphaDecade);
+				Debug.Log ("updated start value :" + startStatus_Value);
+				startStatus_QValue.Q_Value [actionChoice] = startStatus_Value;
+			} 
+			//else {
+			//	startStatus_Value = actionResult * alphaDecade;
+			//	startStatus_QValue.Q_Value [actionChoice] = startStatus_Value;
+			//}
+
+			//update file
+			string path = @"C:\Users\Loso\Documents\GitHub\GameAI_ML_Maze\QValueResult.txt";
+			string[] lines = System.IO.File.ReadAllLines(path);
+			if (update_StartStatus) {
+				int no = (startStatus.row * Columns) + startStatus.col + 2;
+				lines[no] = updatedStatusString (no, startStatus.row, startStatus.col, startStatus_QValue);
 			}
+			if (update_EndStatus) {
+				int no = (endStatus.row * Columns) + endStatus.col + 2;
+				lines[no] = updatedStatusString (no, endStatus.row, endStatus.col, endStatus_QValue);
+			}
+
+			//write file
+			if (System.IO.File.Exists(path))
+				System.IO.File.WriteAllLines(path, lines);
+			
 		}
 	} 
 }
