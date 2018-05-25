@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using System.IO;
 using System.Text;
 
@@ -54,10 +55,12 @@ public class MazeSpawner : MonoBehaviour {
 	private ActionChoices actionChoice;
 	private List<ActionChoices> actionChoiceArray = new List<ActionChoices>();
 	private ActionResultTable resultTable = null;
-	private List<Episodes> experienceList = new List<Episodes>();
 
-	//text file
-	//private StreamWriter sw = new StreamWriter("QValueResult.txt");
+	//records for evaluation 
+	private readonly int FIXED_EPISODE_NUMBER = 10000;
+	private int episode_count = 0;
+	private double iteration_steps = 0;
+	//private List<int> experienceList = new List<int>();
 
 	void Start () {
 		createMaze ();
@@ -69,14 +72,22 @@ public class MazeSpawner : MonoBehaviour {
 			//do iteration training
 			if (!isActionPerforming)
 				doAction ();
-			else {
+			else
 				actionPerforming ();
-			}
 		} else {
+			//enter safezone
 			freezeTimer += Time.deltaTime;
 			Debug.Log("Timer " + freezeTimer);
 			if (freezeTimer >= freezeTime) {
-				//evaluate experience
+				if (episode_count < FIXED_EPISODE_NUMBER) {
+					episode_count++;
+					saveIterationPerformance ();
+					iteration_steps = 0;
+					Debug.Log("Steps Count: " + iteration_steps);
+				}
+				else
+					return;
+				
 				//reset
 				current_RowIndex = Child_Start_Row;
 				current_ColIndex = Child_Start_Col;
@@ -87,10 +98,16 @@ public class MazeSpawner : MonoBehaviour {
 		}
 	}
 
+	void saveIterationPerformance() {
+		//update file
+		string content = episode_count + "\t\t" + iteration_steps + Environment.NewLine;
+		File.AppendAllText(@"C:\Users\Loso\Documents\GitHub\GameAI_ML_Maze\Performance.txt", content);
+	}
+
 	void createMaze() {
 		if (!FullRandom) {
 			//Random.seed = RandomSeed;
-			Random.InitState (RandomSeed);
+			UnityEngine.Random.InitState (RandomSeed);
 		}
 		switch (Algorithm) {
 		case MazeGenerationAlgorithm.PureRecursive:
@@ -196,6 +213,17 @@ public class MazeSpawner : MonoBehaviour {
 			sw.Close();
 		}
 
+		using (var sw = new StreamWriter("Performance.txt"))
+		{
+			var interationNo = "Iter.Index";
+			var stepsNo = "Steps Count";
+			var line = string.Format("{0}\t{1}\n", interationNo, stepsNo);
+			sw.WriteLine(line);
+
+			sw.Flush();
+			sw.Close();
+		}
+
 		actionChoiceArray.Add (ActionChoices.MOVE_UP);
 		actionChoiceArray.Add (ActionChoices.MOVE_RIGHT);
 		actionChoiceArray.Add (ActionChoices.MOVE_DOWN);
@@ -228,13 +256,16 @@ public class MazeSpawner : MonoBehaviour {
 	}
 
 	void doAction() {
+		//count steps
+		iteration_steps++;
+
 		startStatus = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex);
 
 		ActionChoices action;
 		List<ActionChoices> actionSet = getOptimalPolicy(startStatus);
 		if (actionSet == null) {
 			Debug.Log("Random Run");
-			int actionIndex = Random.Range (1, 1000) % 4;
+			int actionIndex = UnityEngine.Random.Range (1, 1000) % 4;
 			action = actionChoiceArray [actionIndex];
 		} else if(actionSet.Count == 1){
 			Debug.Log("Choose Optimal Policy, count :" + actionSet.Count);
@@ -243,7 +274,7 @@ public class MazeSpawner : MonoBehaviour {
 		else {
 			Debug.Log("Choose Optimal Policy, count :" + actionSet.Count);
 			//need to check is any optimal policay here
-			int randomIndex = Random.Range (1, 1000) % actionSet.Count;
+			int randomIndex = UnityEngine.Random.Range (1, 1000) % actionSet.Count;
 			Debug.Log("randomIndex :" + randomIndex);
 			action = (ActionChoices)actionSet [randomIndex];
 		}
