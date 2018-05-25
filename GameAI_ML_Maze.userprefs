@@ -2,10 +2,9 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Third Party Assets\MazeGenerator\Scripts\MazeSpawner.cs">
     <Files>
-      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\MazeSpawner.cs" Line="301" Column="43" />
-      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResultTable.cs" Line="6" Column="4" />
-      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResult.cs" Line="6" Column="91" />
-      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\Episodes.cs" Line="5" Column="26" />
+      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\MazeSpawner.cs" Line="335" Column="17" />
+      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResultTable.cs" Line="16" Column="30" />
+      <File FileName="Assets\Third Party Assets\MazeGenerator\Scripts\ActionResult.cs" Line="8" Column="29" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
