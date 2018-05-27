@@ -57,7 +57,7 @@ public class MazeSpawner : MonoBehaviour {
 	private ActionResultTable resultTable = null;
 
 	//records for evaluation 
-	private readonly int FIXED_EPISODE_NUMBER = 10000;
+	private readonly int FIXED_EPISODE_NUMBER = 1000;
 	private int episode_count = 0;
 	private double iteration_steps = 0;
 	//private List<int> experienceList = new List<int>();
@@ -261,8 +261,13 @@ public class MazeSpawner : MonoBehaviour {
 
 		startStatus = mMazeGenerator.GetMazeCell (current_RowIndex, current_ColIndex);
 
+		//TD-learning
 		ActionChoices action;
-		List<ActionChoices> actionSet = getOptimalPolicy(startStatus);
+		Debug.Log("Random Run");
+		int actionIndex = UnityEngine.Random.Range (1, 1000) % 4;
+		action = actionChoiceArray [actionIndex];
+
+		/*List<ActionChoices> actionSet = getOptimalPolicy(startStatus);
 		if (actionSet == null) {
 			Debug.Log("Random Run");
 			int actionIndex = UnityEngine.Random.Range (1, 1000) % 4;
@@ -277,7 +282,7 @@ public class MazeSpawner : MonoBehaviour {
 			int randomIndex = UnityEngine.Random.Range (1, 1000) % actionSet.Count;
 			Debug.Log("randomIndex :" + randomIndex);
 			action = (ActionChoices)actionSet [randomIndex];
-		}
+		}*/
 
 		if (action == ActionChoices.MOVE_UP) {
 			current_RowIndex++;
